@@ -57,16 +57,21 @@ public class SMSServiceProviderImpl implements SMSServiceProvider {
 
 	@Override
 	public SMSResponseDto sendSms(String contactNumber, String message) {
+		//added code
+		stringBuffer contactNumberBuffer = new StringBuffer(contactNumber);
+		String contactNumberTrimmed = contactNumberBuffer.deleteCharAt(0);
+		//end added code
+		
 		SMSResponseDto smsResponseDTO = new SMSResponseDto();
 		validateInput(contactNumber);
 		UriComponentsBuilder sms = UriComponentsBuilder.fromHttpUrl(api)
-				.queryParam(SmsPropertyConstant.AUTH_KEY.getProperty(), authkey)
-				.queryParam(SmsPropertyConstant.SMS_MESSAGE.getProperty(), message)
-				.queryParam(SmsPropertyConstant.ROUTE.getProperty(), route)
-				.queryParam(SmsPropertyConstant.SENDER_ID.getProperty(), sender)
-				.queryParam(SmsPropertyConstant.RECIPIENT_NUMBER.getProperty(), contactNumber)
-				.queryParam(SmsPropertyConstant.UNICODE.getProperty(), unicode)
-				.queryParam(SmsPropertyConstant.COUNTRY_CODE.getProperty(), countryCode);
+				.queryParam('api_password', authkey)
+				.queryParam('textmessage', message)
+				.queryParam('sender_id', sender)
+				.queryParam('api_id', route)
+				.queryParam('phonenumber', countryCode + contactNumberTrimmed.toString())
+				.queryParam('sms_type', 'T')
+				.queryParam('encoding', 'T');
 		try {
 			restTemplate.getForEntity(sms.toUriString(), String.class);
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
